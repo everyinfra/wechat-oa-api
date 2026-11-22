@@ -78,12 +78,70 @@ Custom connectors in Claude on the web and desktop, and ChatGPT, accept only a U
 
 ### Fields
 
-The fields of each capability are documented on the English pages linked below.
+These are the fields that the 4 capabilities returned in our test. Each meaning is the first sentence of the field's entry in the API documentation. The link under each table has the full text.
 
-- `article_search`: <https://everyinfra.com/en/wechat-oa-api/article_search?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-- `article_detail`: <https://everyinfra.com/en/wechat-oa-api/article_detail?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-- `article_comments`: <https://everyinfra.com/en/wechat-oa-api/article_comments?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-- `account_profile`: <https://everyinfra.com/en/wechat-oa-api/account_profile?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+#### `article_search` (article search)
+
+| Field | Meaning |
+|---|---|
+| `title` | Title. null when the platform has no titles (for example text-only posts). |
+| `summary` | Article summary shown in the search result. |
+| `url` | Link to the record on the platform. |
+| `cover_image_url` | Cover image URL of the article. |
+| `account_name` | Name of the Official Account that published the article. |
+| `posted_at` | Publish time in ISO 8601, UTC (for example 2026-08-07T12:34:56+00:00). |
+| `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
+
+All parameters and fields: <https://everyinfra.com/en/wechat-oa-api/article_search?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+
+#### `article_detail` (article details)
+
+| Field | Meaning |
+|---|---|
+| `title` | Title. null when the platform has no titles (for example text-only posts). |
+| `url` | Link to the record on the platform. |
+| `content_text` | Full article body as plain text (no HTML tags). |
+| `content_html` | Full article body as original HTML, preserving layout and image references. |
+| `author` | Article byline (often a personal pen name, not necessarily the account name). |
+| `account_name` | Name of the Official Account that published the article. |
+| `account_ghid` | The account's raw ID, unique within WeChat. |
+| `cover_image_url` | Cover image URL of the article. |
+| `images` | Image URL list from the article body. |
+| `is_original` | Whether the article carries an original-content declaration. |
+| `posted_at` | Publish time in ISO 8601, UTC (for example 2026-08-07T12:34:56+00:00). |
+| `ip_region` | IP region shown at publish time (province/country). |
+| `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
+
+All parameters and fields: <https://everyinfra.com/en/wechat-oa-api/article_detail?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+
+#### `article_comments` (article comments)
+
+| Field | Meaning |
+|---|---|
+| `id` | The record's unique ID on WeChat. |
+| `text` | Body text with HTML removed, returned in full and never cut short (on a few platforms the list results themselves carry only an excerpt; the platform's field notes say so). |
+| `author_name` | Author's display name. |
+| `like_count` | Likes. null means the platform or this capability does not disclose it; it is not 0. |
+| `posted_at` | Publish time in ISO 8601, UTC (for example 2026-08-07T12:34:56+00:00). |
+| `reply_count` | Replies, usually replies to a comment. null means not disclosed. |
+| `country` | Country or region: a full name or an ISO code depending on the platform, not normalized. |
+| `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
+
+Other fields that the test returned: `author_avatar_url`, `is_top`, and `province`.
+
+All parameters and fields: <https://everyinfra.com/en/wechat-oa-api/article_comments?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+
+#### `account_profile` (account details)
+
+| Field | Meaning |
+|---|---|
+| `account_id` | Official Account ID (its WeChat ID). |
+| `name` | Name of the object itself, for account, product and business capabilities. |
+| `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
+
+Other fields that the test returned: `account_type`.
+
+All parameters and fields: <https://everyinfra.com/en/wechat-oa-api/account_profile?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
 
 ### FAQ
 
