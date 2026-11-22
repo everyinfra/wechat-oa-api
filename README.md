@@ -1,6 +1,137 @@
-# 微信公众号 API（WeChat Official Accounts API）
+# WeChat Official Accounts API（微信公众号 API）
 
-[中文](#中文) · [English](#english)
+[English](#english) · [中文](#中文)
+
+## English
+
+This repo reads public WeChat Official Accounts data with Python or curl. You can search articles by keyword, read article text and comments, and look up an official account's profile. You need one EveryInfra API key. You do not need a WeChat account or cookie. The same API also works as an MCP tool in Claude and Cursor. Billing is per call: these 4 capabilities cost $5.56 to $8.00 per 1,000 calls. Failed calls and empty results are not charged. The EveryInfra WeChat Official Accounts API has 13 capabilities; 12 are available now. All are listed on the platform page: <https://everyinfra.com/en/wechat-oa-api?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+
+### Quick start
+
+```bash
+git clone https://github.com/everyinfra/wechat-oa-api.git
+cd wechat-oa-api
+pip install -r requirements.txt
+export EVERYINFRA_API_KEY=<your API key>
+python main.py search 咖啡机 --out articles.csv
+python main.py article "<article url>" --out article.json
+python main.py comments "<article url>" --out comments.csv
+python main.py account "<account>"
+```
+
+- Take the article link from the `url` field of a `search` result.
+- For `account`, pass the account name. The test run used the `account_name` from a `search` result. The `account_id` it returns is the original ID that starts with gh_.
+- `comments` reads the comments under an article. An article without comments returns 0 rows and is not charged.
+- Without `--out`, the command prints the first 3 rows as JSON. With `--out`, it saves a .csv or .json file. The CSV has a BOM, so Excel opens it without garbled text.
+- Register at everyinfra.com, then create the API key in the console. Steps: <https://everyinfra.com/en/docs?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api#quickstart>
+
+### curl
+
+```bash
+curl -X POST https://api.everyinfra.com/api/v1/social \
+  -H "Authorization: Bearer $EVERYINFRA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"platform":"wechat_oa","action":"article_search","params":{"keyword":"咖啡机"}}'
+```
+
+All capabilities use the same URL. Change `action` and `params` to call another one. Examples for `article_detail`, `article_comments`, and `account_profile` are in [examples/curl.sh](examples/curl.sh).
+
+### Claude and Cursor (MCP)
+
+The remote MCP URL is <https://api.everyinfra.com/mcp>. Add the `Authorization: Bearer` header with your API key. EveryInfra runs the server, so you install no local program.
+
+Claude Code:
+
+```bash
+claude mcp add --transport http everyinfra https://api.everyinfra.com/mcp --header "Authorization: Bearer <API Key>"
+```
+
+Cursor and other clients that read `mcp.json` ([examples/mcp.json](examples/mcp.json)):
+
+```json
+{
+  "mcpServers": {
+    "everyinfra": {
+      "url": "https://api.everyinfra.com/mcp",
+      "headers": {
+        "Authorization": "Bearer <API Key>"
+      }
+    }
+  }
+}
+```
+
+Custom connectors in Claude on the web and desktop, and ChatGPT, accept only a URL. Enter <https://api.everyinfra.com/mcp/all>, sign in to EveryInfra when asked, and allow access. You do not need to enter a key. Full steps: <https://everyinfra.com/en/mcp-server?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+
+### Price
+
+| `action` | Per 1,000 calls |
+|---|---|
+| `article_search` | $8.00 |
+| `article_detail` | $5.56 |
+| `article_comments` | $6.76 |
+| `account_profile` | $8.00 |
+
+- Billing is per call, about $0.0056 to $0.008 each. Failed calls, empty results, parameter errors, and authentication failures are not charged.
+- A new account gets a $1 trial allowance, valid for 24 hours. No credit card is needed. How to claim it: <https://everyinfra.com/en/pricing?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+- Prices for the other 8 available WeChat Official Accounts capabilities are on the platform page: <https://everyinfra.com/en/wechat-oa-api?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+
+### Fields
+
+The fields of each capability are documented on the English pages linked below.
+
+- `article_search`: <https://everyinfra.com/en/wechat-oa-api/article_search?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+- `article_detail`: <https://everyinfra.com/en/wechat-oa-api/article_detail?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+- `article_comments`: <https://everyinfra.com/en/wechat-oa-api/article_comments?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+- `account_profile`: <https://everyinfra.com/en/wechat-oa-api/account_profile?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+
+### FAQ
+
+**Do I need a WeChat Official Accounts account or cookie to call the API?**
+
+No. Send the `Authorization: Bearer` header with your API key. The request body holds `platform`, `action`, and the capability parameters. You do not scan a QR code, keep a login session, or open a browser.
+
+**How much does it cost? Are failed calls charged? Is there a free allowance?**
+
+Billing is per call, from $5.56 per 1,000 calls. Failed calls, empty results, parameter errors, and authentication failures are not charged. A new account gets a $1 trial allowance, valid for 24 hours. No credit card is needed. How to claim it: <https://everyinfra.com/en/pricing?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+
+**Can I connect the WeChat Official Accounts API to Claude or Cursor?**
+
+Yes. The remote MCP URL is <https://api.everyinfra.com/mcp>. Add the `Authorization: Bearer` header with your API key. You install no local program. Setup for Claude, Cursor, ChatGPT, and Claude Code: <https://everyinfra.com/en/mcp-server?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>.
+
+**What legal points apply when I use WeChat Official Accounts data?**
+
+The EveryInfra Terms of Service require you to make sure your use of the data follows applicable law and the terms of the relevant platform. Do not use the data for anything illegal or anything that violates privacy or intellectual property rights. Do not use bulk scraping for harassment, fraud, or other abuse. When you use personal information such as nicknames and avatars, keep only the fields your business needs.
+
+**Which WeChat Official Accounts data can I get?**
+
+The EveryInfra WeChat Official Accounts API has 13 capabilities; 12 are available now:
+
+- article search
+- article details
+- account search
+- search suggestions
+- account details
+- account owner
+- account articles
+- today's account articles
+- article comments
+- comment replies
+- article engagement
+- WeChat Index
+
+Parameters and return fields for each capability are on the platform page: <https://everyinfra.com/en/wechat-oa-api?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+
+### Tested
+
+Before release, we ran the 4 commands in Quick start against the live API with this repo's code.
+
+| Command | Time (Singapore, UTC+8) | Rows | Charged |
+|---|---|---|---|
+| `python main.py search 咖啡机 --out articles.csv` | 2026-11-21 09:21 | 20 | $0.008000 |
+| `python main.py article "<article url>" --out article.json` | 2026-11-21 09:22 | 1 | $0.005556 |
+| `python main.py comments "<article url>" --out comments.csv` | 2026-11-21 09:22 | 13 | $0.006764 |
+| `python main.py account "<account>"` | 2026-11-21 09:23 | 1 | $0.008000 |
 
 ## 中文
 
@@ -186,137 +317,6 @@ EveryInfra 服务条款要求你自行确保数据用法符合适用法律和相
   "posted_at": "2026-06-15T06:04:57+00:00"
 }
 ```
-
-## English
-
-This repo reads public WeChat Official Accounts data with Python or curl. You can search articles by keyword, read article text and comments, and look up an official account's profile. You need one EveryInfra API key. You do not need a WeChat account or cookie. The same API also works as an MCP tool in Claude and Cursor. Billing is per call: these 4 capabilities cost $5.56 to $8.00 per 1,000 calls. Failed calls and empty results are not charged. The EveryInfra WeChat Official Accounts API has 13 capabilities; 12 are available now. All are listed on the platform page: <https://everyinfra.com/en/wechat-oa-api?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-
-### Quick start
-
-```bash
-git clone https://github.com/everyinfra/wechat-oa-api.git
-cd wechat-oa-api
-pip install -r requirements.txt
-export EVERYINFRA_API_KEY=<your API key>
-python main.py search 咖啡机 --out articles.csv
-python main.py article "<article url>" --out article.json
-python main.py comments "<article url>" --out comments.csv
-python main.py account "<account>"
-```
-
-- Take the article link from the `url` field of a `search` result.
-- For `account`, pass the account name. The test run used the `account_name` from a `search` result. The `account_id` it returns is the original ID that starts with gh_.
-- `comments` reads the comments under an article. An article without comments returns 0 rows and is not charged.
-- Without `--out`, the command prints the first 3 rows as JSON. With `--out`, it saves a .csv or .json file. The CSV has a BOM, so Excel opens it without garbled text.
-- Register at everyinfra.com, then create the API key in the console. Steps: <https://everyinfra.com/en/docs?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api#quickstart>
-
-### curl
-
-```bash
-curl -X POST https://api.everyinfra.com/api/v1/social \
-  -H "Authorization: Bearer $EVERYINFRA_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"platform":"wechat_oa","action":"article_search","params":{"keyword":"咖啡机"}}'
-```
-
-All capabilities use the same URL. Change `action` and `params` to call another one. Examples for `article_detail`, `article_comments`, and `account_profile` are in [examples/curl.sh](examples/curl.sh).
-
-### Claude and Cursor (MCP)
-
-The remote MCP URL is <https://api.everyinfra.com/mcp>. Add the `Authorization: Bearer` header with your API key. EveryInfra runs the server, so you install no local program.
-
-Claude Code:
-
-```bash
-claude mcp add --transport http everyinfra https://api.everyinfra.com/mcp --header "Authorization: Bearer <API Key>"
-```
-
-Cursor and other clients that read `mcp.json` ([examples/mcp.json](examples/mcp.json)):
-
-```json
-{
-  "mcpServers": {
-    "everyinfra": {
-      "url": "https://api.everyinfra.com/mcp",
-      "headers": {
-        "Authorization": "Bearer <API Key>"
-      }
-    }
-  }
-}
-```
-
-Custom connectors in Claude on the web and desktop, and ChatGPT, accept only a URL. Enter <https://api.everyinfra.com/mcp/all>, sign in to EveryInfra when asked, and allow access. You do not need to enter a key. Full steps: <https://everyinfra.com/en/mcp-server?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-
-### Price
-
-| `action` | Per 1,000 calls |
-|---|---|
-| `article_search` | $8.00 |
-| `article_detail` | $5.56 |
-| `article_comments` | $6.76 |
-| `account_profile` | $8.00 |
-
-- Billing is per call, about $0.0056 to $0.008 each. Failed calls, empty results, parameter errors, and authentication failures are not charged.
-- A new account gets a $1 trial allowance, valid for 24 hours. No credit card is needed. How to claim it: <https://everyinfra.com/en/pricing?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-- Prices for the other 8 available WeChat Official Accounts capabilities are on the platform page: <https://everyinfra.com/en/wechat-oa-api?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-
-### Fields
-
-The fields of each capability are documented on the English pages linked below.
-
-- `article_search`: <https://everyinfra.com/en/wechat-oa-api/article_search?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-- `article_detail`: <https://everyinfra.com/en/wechat-oa-api/article_detail?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-- `article_comments`: <https://everyinfra.com/en/wechat-oa-api/article_comments?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-- `account_profile`: <https://everyinfra.com/en/wechat-oa-api/account_profile?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-
-### FAQ
-
-**Do I need a WeChat Official Accounts account or cookie to call the API?**
-
-No. Send the `Authorization: Bearer` header with your API key. The request body holds `platform`, `action`, and the capability parameters. You do not scan a QR code, keep a login session, or open a browser.
-
-**How much does it cost? Are failed calls charged? Is there a free allowance?**
-
-Billing is per call, from $5.56 per 1,000 calls. Failed calls, empty results, parameter errors, and authentication failures are not charged. A new account gets a $1 trial allowance, valid for 24 hours. No credit card is needed. How to claim it: <https://everyinfra.com/en/pricing?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-
-**Can I connect the WeChat Official Accounts API to Claude or Cursor?**
-
-Yes. The remote MCP URL is <https://api.everyinfra.com/mcp>. Add the `Authorization: Bearer` header with your API key. You install no local program. Setup for Claude, Cursor, ChatGPT, and Claude Code: <https://everyinfra.com/en/mcp-server?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>.
-
-**What legal points apply when I use WeChat Official Accounts data?**
-
-The EveryInfra Terms of Service require you to make sure your use of the data follows applicable law and the terms of the relevant platform. Do not use the data for anything illegal or anything that violates privacy or intellectual property rights. Do not use bulk scraping for harassment, fraud, or other abuse. When you use personal information such as nicknames and avatars, keep only the fields your business needs.
-
-**Which WeChat Official Accounts data can I get?**
-
-The EveryInfra WeChat Official Accounts API has 13 capabilities; 12 are available now:
-
-- article search
-- article details
-- account search
-- search suggestions
-- account details
-- account owner
-- account articles
-- today's account articles
-- article comments
-- comment replies
-- article engagement
-- WeChat Index
-
-Parameters and return fields for each capability are on the platform page: <https://everyinfra.com/en/wechat-oa-api?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
-
-### Tested
-
-Before release, we ran the 4 commands in Quick start against the live API with this repo's code.
-
-| Command | Time (Singapore, UTC+8) | Rows | Charged |
-|---|---|---|---|
-| `python main.py search 咖啡机 --out articles.csv` | 2026-11-21 09:21 | 20 | $0.008000 |
-| `python main.py article "<article url>" --out article.json` | 2026-11-21 09:22 | 1 | $0.005556 |
-| `python main.py comments "<article url>" --out comments.csv` | 2026-11-21 09:22 | 13 | $0.006764 |
-| `python main.py account "<account>"` | 2026-11-21 09:23 | 1 | $0.008000 |
 
 ## License
 
