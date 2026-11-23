@@ -121,13 +121,14 @@ All parameters and fields: <https://everyinfra.com/en/wechat-oa-api/article_deta
 | `id` | The record's unique ID on WeChat. |
 | `text` | Body text with HTML removed, returned in full and never cut short (on a few platforms the list results themselves carry only an excerpt; the platform's field notes say so). |
 | `author_name` | Author's display name. |
+| `author_avatar_url` | Author's avatar. |
 | `like_count` | Likes. null means the platform or this capability does not disclose it; it is not 0. |
 | `posted_at` | Publish time in ISO 8601, UTC (for example 2026-08-07T12:34:56+00:00). |
+| `is_top` | Whether the content is pinned. |
 | `reply_count` | Replies, usually replies to a comment. null means not disclosed. |
 | `country` | Country or region: a full name or an ISO code depending on the platform, not normalized. |
+| `province` | Province where it is located. |
 | `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
-
-Other fields that the test returned: `author_avatar_url`, `is_top`, and `province`.
 
 All parameters and fields: <https://everyinfra.com/en/wechat-oa-api/article_comments?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
 
@@ -137,9 +138,8 @@ All parameters and fields: <https://everyinfra.com/en/wechat-oa-api/article_comm
 |---|---|
 | `account_id` | Official Account ID (its WeChat ID). |
 | `name` | Name of the object itself, for account, product and business capabilities. |
+| `account_type` | Account type (subscription account or service account). |
 | `platform` | Source platform identifier, the same as platform in the request (for example xiaohongshu, tiktok). |
-
-Other fields that the test returned: `account_type`.
 
 All parameters and fields: <https://everyinfra.com/en/wechat-oa-api/account_profile?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
 
@@ -293,7 +293,7 @@ Claude 网页版和桌面版的自定义连接器、ChatGPT 只能填网址：�
 | `content_html` | 文章正文（原始 HTML，保留排版与图片引用）。 |
 | `author` | 文章作者（可能是个人笔名，不一定是公众号名）。 |
 | `account_name` | 公众号名称。 |
-| `account_ghid` | 公众号的 gh_ 开头原始 ID，微信体系内的唯一标识。 |
+| `account_ghid` | 公众号的原始 ID，微信体系内唯一。 |
 | `cover_image_url` | 封面图。 |
 | `images` | 正文内图片 URL 列表。 |
 | `is_original` | 是否为原创声明文章。 |
