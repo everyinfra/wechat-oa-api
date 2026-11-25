@@ -145,7 +145,7 @@ All parameters and fields: <https://everyinfra.com/en/wechat-oa-api/account_prof
 
 ### FAQ
 
-**Do I need a WeChat Official Accounts account or cookie to call the API?**
+**Do I need a WeChat account or cookie to call the API?**
 
 No. Send the `Authorization: Bearer` header with your API key. The request body holds `platform`, `action`, and the capability parameters. You do not scan a QR code, keep a login session, or open a browser.
 
@@ -193,7 +193,7 @@ Before release, we ran the 4 commands in Quick start against the live API with t
 
 ## 中文
 
-本仓库用 Python 或 curl 读微信公众号公开数据：按关键词搜文章，读文章正文和留言，查公众号资料。只需一把 EveryInfra API Key，不用微信账号和 Cookie，也能作为 MCP 工具接进 Claude、Cursor。按调用次数计费，这 4 个能力每千次 $5.56 到 $8.00，失败和空结果不收费。微信公众号共 13 个能力，其中 12 个现在可用：<https://everyinfra.com/wechat-oa-api?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
+本仓库用 Python 或 curl 读微信公众号公开数据：按关键词搜文章，读文章正文和留言，查公众号资料。只需一把 EveryInfra API Key，不用微信公众号账号和 Cookie，也能作为 MCP 工具接进 Claude、Cursor。按调用次数计费，这 4 个能力每千次 $5.56 到 $8.00，失败和空结果不收费。微信公众号共 13 个能力，其中 12 个现在可用：<https://everyinfra.com/wechat-oa-api?utm_source=github&utm_medium=example_repo&utm_campaign=wechat-oa-api>
 
 ### 快速开始
 
